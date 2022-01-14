@@ -3,8 +3,11 @@
 namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
+use App\Models\Blog;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
+use Illuminate\Support\Str;
 
 class BlogController extends Controller
 {
@@ -15,7 +18,10 @@ class BlogController extends Controller
      */
     public function index()
     {
-        dd("test");
+        $blogs = Blog::all();
+        return Inertia::render('Backend/Blog/Index', [
+            'blogs' => $blogs
+        ]);
     }
 
     /**
@@ -25,7 +31,7 @@ class BlogController extends Controller
      */
     public function create()
     {
-        //
+        return Inertia::render('Backend/Blog/Create');
     }
 
     /**
@@ -36,7 +42,27 @@ class BlogController extends Controller
      */
     public function store(Request $request)
     {
-        //
+        $request->validate([
+            'title' => 'required|string',
+            'description' => 'required|string',
+            'image' => 'required|image|mimes:jpg,jpeg,png,gif'
+        ]);
+
+        $image=$request->file('image');
+
+        if (isset($image)){
+           $imgName=Str::slug($request->title).uniqid().'.'.$image->getClientOriginalExtension();
+        }
+       
+        Blog::create([
+            'title' => $request->title,
+            'slug' => Str::slug($request->title),
+            'body' => $request->description,
+            'thumbnail' => $request->file('image')->storeAs('blogs',$imgName),
+        ]);
+
+        return Redirect::route('app.blogs.index')->with('success', 'Blog Created Successfully');
+
     }
 
     /**
@@ -47,7 +73,27 @@ class BlogController extends Controller
      */
     public function show(Blog $blog)
     {
-        //
+        return Inertia::render('Backend/Blog/Show', [
+            'blog' => $blog
+        ]);
+    }
+
+
+    // Blog Status Method
+    public function status(Request $request,Blog $blog)
+    {
+        if($blog->status == true) {
+            $blog->update([
+                'status'=>$request->status
+            ]);
+            return back()->with('success','Blog Status is turned Off');
+        }
+        else {
+            $blog->update([
+                'status'=>$request->status
+            ]);
+            return back()->with('success','Blog Status is turned On');
+        }
     }
 
     /**
@@ -58,7 +104,10 @@ class BlogController extends Controller
      */
     public function edit(Blog $blog)
     {
-        //
+        // dd($blog);
+        return Inertia::render('Backend/Blog/Edit', [
+            'blog' => $blog
+        ]);
     }
 
     /**
@@ -70,7 +119,23 @@ class BlogController extends Controller
      */
     public function update(Request $request, Blog $blog)
     {
-        //
+
+        $image=$request->file('image');
+
+        if (isset($image)){
+           $imgName=Str::slug($request->title).uniqid().'.'.$image->getClientOriginalExtension();
+        }
+
+        // dd($blog->getRawOriginal('thumbnail'));
+       
+        $blog->update([
+            'title' => $request->title,
+            'slug' => Str::slug($request->title),
+            'body' => $request->description,
+            'thumbnail' => isset($request->image) ? $request->file('image')->storeAs('blogs',$imgName): $blog->getRawOriginal('thumbnail'),
+        ]);
+
+        return Redirect::route('app.blogs.index')->with('success', 'Blog Updated Successfully');
     }
 
     /**
@@ -81,6 +146,7 @@ class BlogController extends Controller
      */
     public function destroy(Blog $blog)
     {
-        //
+        $blog->delete();
+        return Redirect::route('app.blogs.index')->with('success', 'Blog Deleted Successfully'); 
     }
 }

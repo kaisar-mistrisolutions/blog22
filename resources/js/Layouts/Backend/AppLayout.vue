@@ -120,7 +120,7 @@
 	</div>
 
 	<!-- Notification Starts -->
-	<Notification />
+	<!-- <Notification /> -->
 </template>
 
 <script>
@@ -178,8 +178,6 @@ export default {
 		MenuAlt2Icon,
 		SearchIcon,
 		XIcon,
-		PlayIcon,
-		FilmIcon,
 		UserGroupIcon,
 		CogIcon,
 		OfficeBuildingIcon,
@@ -189,7 +187,7 @@ export default {
 		Disclosure,
 		DisclosureButton,
 		DisclosurePanel,
-		Notification,
+		// Notification,
 		CurrencyBangladeshiIcon,
 		DatabaseIcon,
 		FlagIcon,
