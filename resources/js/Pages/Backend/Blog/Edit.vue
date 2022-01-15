@@ -42,6 +42,15 @@
 									<span v-if="form.errors.title" class="flex items-center justify-center p-2 text-center text-red-700">{{ form.errors.title }}</span>
 								</div>
 
+								<!-- Cate Name -->
+								<label for="category" class="block text-sm font-medium text-gray-700">CATEGORY</label>
+								<select id="category_id" name="category_id" v-model="form.category_id" class="mt-1 block w-full pl-3 pr-10 py-2 text-base border-gray-300 focus:outline-none focus:ring-indigo-500 focus:border-indigo-500 sm:text-sm rounded-md">
+									<option hidden>Select Category</option>
+									<option v-for="(category, index) in categories" :key="index" :value="category.id">
+										{{ category.name }}
+									</option>
+								</select>
+
 								<div>
 									<label for="description" class="block text-sm font-medium text-gray-700"> DESCRIPTION </label>
 									<div class="mt-1 flex rounded-md shadow-sm">
@@ -89,6 +98,7 @@ export default {
 	},
 	props: {
 		blog: Object,
+		categories: Array,
 	},
 	setup(props) {
 		const image = ref(null)
@@ -96,6 +106,7 @@ export default {
 		const form = useForm({
 			_method: "PUT",
 			title: props.blog.title,
+			category_id: props.blog.category_id,
 			description: props.blog.body,
 			image: null,
 		})

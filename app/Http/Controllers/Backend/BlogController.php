@@ -4,6 +4,7 @@ namespace App\Http\Controllers\Backend;
 
 use App\Http\Controllers\Controller;
 use App\Models\Blog;
+use App\Models\Category;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Redirect;
 use Inertia\Inertia;
@@ -18,7 +19,8 @@ class BlogController extends Controller
      */
     public function index()
     {
-        $blogs = Blog::all();
+        
+        $blogs = Blog::with('category')->get();
         return Inertia::render('Backend/Blog/Index', [
             'blogs' => $blogs
         ]);
@@ -31,7 +33,10 @@ class BlogController extends Controller
      */
     public function create()
     {
-        return Inertia::render('Backend/Blog/Create');
+        $categories = Category::all();
+        return Inertia::render('Backend/Blog/Create', [
+            'categories' => $categories
+        ]);
     }
 
     /**
@@ -45,6 +50,7 @@ class BlogController extends Controller
         $request->validate([
             'title' => 'required|string',
             'description' => 'required|string',
+            'category_id' => 'required',
             'image' => 'required|image|mimes:jpg,jpeg,png,gif'
         ]);
 
@@ -57,6 +63,7 @@ class BlogController extends Controller
         Blog::create([
             'title' => $request->title,
             'slug' => Str::slug($request->title),
+            'category_id' => $request->category_id,
             'body' => $request->description,
             'thumbnail' => $request->file('image')->storeAs('blogs',$imgName),
         ]);
@@ -73,6 +80,7 @@ class BlogController extends Controller
      */
     public function show(Blog $blog)
     {
+        $blog = Blog::where('id', $blog->id)->with('category')->first();
         return Inertia::render('Backend/Blog/Show', [
             'blog' => $blog
         ]);
@@ -105,8 +113,10 @@ class BlogController extends Controller
     public function edit(Blog $blog)
     {
         // dd($blog);
+        $categories = Category::all();
         return Inertia::render('Backend/Blog/Edit', [
-            'blog' => $blog
+            'blog' => $blog,
+            'categories' => $categories
         ]);
     }
 
@@ -131,6 +141,7 @@ class BlogController extends Controller
         $blog->update([
             'title' => $request->title,
             'slug' => Str::slug($request->title),
+            'category_id' => $request->category_id,
             'body' => $request->description,
             'thumbnail' => isset($request->image) ? $request->file('image')->storeAs('blogs',$imgName): $blog->getRawOriginal('thumbnail'),
         ]);
