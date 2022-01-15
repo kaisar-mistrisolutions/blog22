@@ -50,10 +50,10 @@
 									<a v-for="item in navigation" :key="item.name" :href="item.href" class="block px-3 py-2 rounded-md text-base font-medium text-gray-900 hover:bg-gray-50">{{ item.name }}</a>
 								</div>
 								<div class="mt-6 px-5">
-									<a href="#" class="block text-center w-full py-3 px-4 rounded-md shadow bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-medium hover:from-teal-600 hover:to-cyan-700">Sign Up</a>
+									<a :href="route('register')" class="block text-center w-full py-3 px-4 rounded-md shadow bg-gradient-to-r from-teal-500 to-cyan-600 text-white font-medium hover:from-teal-600 hover:to-cyan-700">Sign Up</a>
 								</div>
 								<div class="mt-6 px-5">
-									<p class="text-center text-base font-medium text-gray-500">Have registered? <a href="#" class="text-gray-900 hover:underline">Login</a></p>
+									<p class="text-center text-base font-medium text-gray-500">Have registered? <a :href="route('login')" class="text-gray-900 hover:underline">Login</a></p>
 								</div>
 							</div>
 						</div>
